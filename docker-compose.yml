@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+    webserver:
+        container_name: webserver
+        build:
+            context: .
+            dockerfile: ./images/nginx/Dockerfile
+        ports:
+            - "80:80"
+        networks:
+            - net
+        depends_on:
+            - morty
+        volumes:
+            - ./morty:/var/www/vhosts/morty
+    morty:
+        container_name: morty
+        build:
+            context: .
+            dockerfile: ./morty/Dockerfile
+        restart: unless-stopped
+        volumes:
+            - ./morty:/var/www/vhosts/morty
+        networks:
+            - net
+networks:
+    net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.168.1.0/24"
